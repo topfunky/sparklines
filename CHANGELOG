@@ -1,0 +1,69 @@
+== 0.5.0
+
+* Documentation for bullet graph.
+* More bullet options for good_color, satisfactory_color, and bad_color.
+* Smooth options for target line value and target_color.
+* Sparklinks.plot_to_image returns a Magick::Image object for further manipulation.
+* Step option for wider whisker.
+
+== 0.4.8
+
+* Added bullet graph. See http://en.wikipedia.org/wiki/Bullet_graph or Stephen Few's book _Information Dashboard Design_.
+
+== 0.4.7
+
+* Improved normalization for better display of close, high-values. [Matt Van Horn]
+* Improved rendering of closed polyline on smooth graph with undercolor. Far left, right, and bottom of polyline are drawn offscreen so they don't show in the visible graph.
+
+== 0.4.6
+
+* Added :underneath_color option to smooth sparkline. [Cory Forsyth]
+
+== 0.4.5
+
+* Several fixes by Rob Biedenharn
+* lib/sparklines_helper.rb: Include example code for generating "data:" URLs (but leave it commented out due to lack of widespread testing)
+* lib/sparklines_helper.rb: allow results to be passed in the options hash (i.e., sparkline_tag(nil, :results => [ ... ], ...))
+* lib/sparklines.rb: Move calculation of whisker endpoints out of loop
+* lib/sparklines.rb: Fix fencepost bug in whisker that caused plot to be 1 pixel short
+
+== 0.4.4
+
+* Fixed stddev rounding bug [Andrew Nutter-Upham]
+
+== 0.4.3
+
+* Minor change for use with Hoe.
+
+== 0.4.2
+
+* Added standard deviation bars [Andrew Nutter-Upham]
+
+== 0.4.1
+
+* Converted to Hoe for rakefile
+* Added whisker graph [Luke Francl]
+* General cleanup and bug fixes
+* Experimental label option
+
+== 0.3.0
+
+* Changed to a Class for maintainability
+* All values are normalized (except pie)
+* A single value can be passed for the pie percentage (instead of an Array)
+
+== 0.2.7
+
+* Fixed bug where last element of bar graph wouldn't go to the bottom [Esad Hajdarevic esad@esse.at]
+
+== 0.2.5
+
+* Tests now use Test::Unit
+* Bar type added
+
+== 0.2.1
+
+* Added line_color option for smooth graphs
+* Now available as a gem ('gem install sparklines') and as a rails generator ('gem install sparklines_generator')
+
+
