@@ -1,3 +1,8 @@
+== 0.5.1
+
+* Fixed drawing and normalization of bar graph
+* Added :target and :target_color to bar graph (draws a horizontal line at a value)
+
 == 0.5.0
 
 * Documentation for bullet graph.

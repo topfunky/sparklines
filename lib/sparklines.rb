@@ -75,7 +75,7 @@ Licensed under the MIT license.
 =end
 class Sparklines
 
-  VERSION = '0.5.0'
+  VERSION = '0.5.1'
 
   @@label_margin = 5.0
   @@pointsize = 10.0
@@ -87,29 +87,29 @@ class Sparklines
 
     def plot_to_image(data=[], options={})
       defaults = {
-        :type => 'smooth',
-        :height => 14,
-        :upper => 50,
-        :diameter => 20,
-        :step => 2,
-        :line_color => 'lightgrey',
+        :type             => 'smooth',
+        :height           => 14,
+        :upper            => 50,
+        :diameter         => 20,
+        :step             => 2,
+        :line_color       => 'lightgrey',
 
-        :above_color => 'red',
-        :below_color => 'grey',
+        :above_color      => 'red',
+        :below_color      => 'grey',
         :background_color => 'white',
-        :share_color => 'red',
-        :remain_color => 'lightgrey',
-        :min_color => 'blue',
-        :max_color => 'green',
-        :last_color => 'red',
-        :std_dev_color => '#efefef',
+        :share_color      => 'red',
+        :remain_color     => 'lightgrey',
+        :min_color        => 'blue',
+        :max_color        => 'green',
+        :last_color       => 'red',
+        :std_dev_color    => '#efefef',
 
-        :has_min => false,
-        :has_max => false,
-        :has_last => false,
-        :has_std_dev => false,
+        :has_min          => false,
+        :has_max          => false,
+        :has_last         => false,
+        :has_std_dev      => false,
 
-        :label => nil
+        :label            => nil
       }
 
       # HACK for HashWithIndifferentAccess
@@ -139,10 +139,10 @@ class Sparklines
     def plot(data=[], options={})
       plot_to_image(data, options).to_blob
     end
-    
+
     ##
     # Writes a graph to disk with the specified filename, or "sparklines.png".
-    
+
     def plot_to_file(filename="sparklines.png", data=[], options={})
       File.open( filename, 'wb' ) do |png|
         png << self.plot( data, options)
@@ -251,26 +251,42 @@ class Sparklines
 
   ##
   # A bar graph.
+  #
+  # Also takes :target option (a line will be drawn) and :upper (values
+  # under will be drawn in :below_color, above in :above_color).
 
   def bar
-    step = @options[:step].to_f
-    height = @options[:height].to_f
+    step             = @options[:step].to_f
+    height           = @options[:height].to_f
+    width            = ((@norm_data.size - 1) * step).to_f
     background_color = @options[:background_color]
 
     create_canvas(@norm_data.length * step + 2, height, background_color)
 
-    upper = @options[:upper].to_f
-    below_color = @options[:below_color]
-    above_color = @options[:above_color]
+    upper            = @options[:upper].to_f
+    below_color      = @options[:below_color]
+    above_color      = @options[:above_color]
+
+    target           = @options.has_key?(:target) ? @options[:target].to_f : nil
+    target_color     = @options[:target_color] || 'white'
 
     i = 1
+    # raise @norm_data.to_yaml
+    max_normalized = @norm_data.max
     @norm_data.each_with_index do |r, index|
-      color = (r >= upper) ? above_color : below_color
+      color = (@data[index] >= upper) ? above_color : below_color
       @draw.stroke('transparent')
       @draw.fill(color)
-      @draw.rectangle( i, @canvas.rows,
-      i + step - 2, @canvas.rows - ( (r / @maximum_value) * @canvas.rows) )
+      bar_height_from_top = @canvas.rows - ( (r.to_f / max_normalized.to_f) * @canvas.rows)
+      @draw.rectangle( i, @canvas.rows, i + step - 2, bar_height_from_top )
       i += step
+    end
+
+    unless target.nil?
+      normalized_target_value = ((target.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
+      adjusted_target_value = (height - 3 - normalized_target_value/(101.0/(height-4))).to_i
+      @draw.stroke(target_color)
+      open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
     end
 
     @draw.draw(@canvas)
@@ -415,28 +431,27 @@ class Sparklines
   #   :target - A 1px horizontal line will be drawn at this value. Useful for showing an average.
   #
   #   :target_color - Color of the target line. Defaults to white.
-  
-  def smooth
 
-    step = @options[:step].to_f
-    height = @options[:height].to_f
-    width = ((@norm_data.size - 1) * step).to_f
+  def smooth
+    step             = @options[:step].to_f
+    height           = @options[:height].to_f
+    width            = ((@norm_data.size - 1) * step).to_f
 
     background_color = @options[:background_color]
     create_canvas(width, height, background_color)
 
-    min_color = @options[:min_color]
-    max_color = @options[:max_color]
-    last_color = @options[:last_color]
-    has_min = @options[:has_min]
-    has_max = @options[:has_max]
-    has_last = @options[:has_last]
-    line_color = @options[:line_color]
-    has_std_dev = @options[:has_std_dev]
-    std_dev_color = @options[:std_dev_color]
+    min_color        = @options[:min_color]
+    max_color        = @options[:max_color]
+    last_color       = @options[:last_color]
+    has_min          = @options[:has_min]
+    has_max          = @options[:has_max]
+    has_last         = @options[:has_last]
+    line_color       = @options[:line_color]
+    has_std_dev      = @options[:has_std_dev]
+    std_dev_color    = @options[:std_dev_color]
 
-    target = @options.has_key?(:target) ? @options[:target].to_f : nil
-    target_color = @options[:target_color] || 'white'
+    target           = @options.has_key?(:target) ? @options[:target].to_f : nil
+    target_color     = @options[:target_color] || 'white'
 
     drawstddevbox(width,height,std_dev_color) if has_std_dev == true
 
@@ -541,7 +556,7 @@ class Sparklines
   #   :height - Numeric. Defaults to 15. Should be a multiple of three.
   #
   #   :width - This graph expands to any specified width. Defaults to 100.
-  #   
+  #
   #   :bad - Numeric. A darker shade background will be drawn up to this point.
   #
   #   :satisfactory - Numeric. A medium background will be drawn up to this point.
@@ -611,8 +626,15 @@ class Sparklines
   private
 
   def normalize_data
-    @minimum_value = @data.min
+    case @options[:type].to_s
+    when 'bar'
+      @minimum_value = 0.0
+    else
+      @minimum_value = @data.min
+    end
+
     @maximum_value = @data.max
+    
     case @options[:type].to_s
     when 'pie'
       @norm_data = @data
