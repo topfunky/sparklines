@@ -2,13 +2,13 @@
 
 A library for generating small sparkline graphs from Ruby. Use it in desktop apps or with Ruby on Rails. 
 
+== Source
+
+http://github.com/topfunky/sparklines
+
 == Other info
 
 http://nubyonrails.com/pages/sparklines
-
-== Rails plugin
-
-http://topfunky.net/svn/plugins/sparklines
 
 == Authors
 
