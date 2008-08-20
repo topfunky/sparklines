@@ -293,7 +293,7 @@ END {
     [image_tag("../../" + record), image_tag("../../" + record.gsub('expected', 'actual'))]
   end
   FileUtils.mkdir_p("test/actual")
-  File.open("test/actual/result.html", "w") do |f|
+  File.open("test/actual/index.html", "w") do |f|
     f.write <<-EOL
     <style>
     .first_column {
@@ -301,6 +301,9 @@ END {
     }
     .last_column {
       text-align: left;
+    }
+    img {
+      border: 1px solid #e0e0e0;
     }
     </style>
     EOL

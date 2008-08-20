@@ -75,7 +75,7 @@ Licensed under the MIT license.
 =end
 class Sparklines
 
-  VERSION = '0.5.1'
+  VERSION = '0.5.2'
 
   @@label_margin = 5.0
   @@pointsize = 10.0

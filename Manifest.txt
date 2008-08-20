@@ -1,4 +1,4 @@
-CHANGELOG
+History.txt
 MIT-LICENSE
 Manifest.txt
 README.txt
@@ -61,4 +61,5 @@ test/expected/whisker.png
 test/expected/whisker_junk.png
 test/expected/whisker_non_exceptional.png
 test/expected/whisker_with_step.png
+test/expected/zeros.png
 test/test_all.rb
