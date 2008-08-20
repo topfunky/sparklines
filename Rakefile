@@ -19,3 +19,14 @@ end
 
 desc "Release and publish documentation"
 task :repubdoc => [:release, :publish_docs]
+
+
+desc "Simple require on packaged files to make sure they are all there"
+task :verify => :package do
+  # An error message will be displayed if files are missing
+  if system %(ruby -e "require 'pkg/sparklines-#{Sparklines::VERSION}/lib/sparklines'")
+    puts "\nThe library files are present"
+  end
+end
+
+task :release => :verify
