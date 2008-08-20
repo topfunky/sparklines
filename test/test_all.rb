@@ -267,6 +267,13 @@ class SparklinesTest < Test::Unit::TestCase
     })
   end
 
+  def test_zeros
+    @data = [0,0,0,0]
+    quick_graph('zeros', {
+      :type => 'smooth',
+    })
+  end
+
   private
 
   def quick_graph(name, options)

@@ -634,7 +634,7 @@ class Sparklines
     end
 
     @maximum_value = @data.max
-    
+
     case @options[:type].to_s
     when 'pie'
       @norm_data = @data
@@ -642,7 +642,11 @@ class Sparklines
       @norm_data = @data
     else
       @norm_data = @data.map do |value|
-        value = ((value.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
+        if @maximum_value == @minimum_value
+          value = @maximum_value
+        else
+          value = ((value.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
+        end
       end
     end
   end
