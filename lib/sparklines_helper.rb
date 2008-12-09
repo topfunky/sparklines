@@ -14,6 +14,9 @@ module SparklinesHelper
 		options = url.merge(options)
     attributes = %(class="#{options[:class] || 'sparkline'}" alt="Sparkline Graph" )
     attributes << %(title="#{options[:title]}" ) if options[:title]
+    
+    attributes << %(width="#{options[:width]}" ) if options[:width] 
+  	attributes << %(height="#{options[:height]}" )  if options[:height]
 
     # prefer to use a "data" URL scheme as described in {RFC 2397}[http://www.ietf.org/rfc/rfc2397.txt]
 #     data_url = "data:image/png;base64,#{Base64.encode64(Sparklines.plot(results,options))}"
