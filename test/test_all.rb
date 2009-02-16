@@ -16,6 +16,8 @@ class SparklinesTest < Test::Unit::TestCase
     44 43 42 42 46 48 49 53 55 59
     60 65 75 90 105 106 107 110 115 120
     115 120 130 140 150 160 170 100 100 10).map {|i| i.to_f}
+    @nil_data = @data.dup
+    [5, 10, 11, 20, 25, 26, 27].each {|i| @nil_data[i] = nil}
   end
 
   test "basic bullet" do
@@ -101,6 +103,12 @@ class SparklinesTest < Test::Unit::TestCase
   def test_each_graph_with_label
     %w{pie area discrete smooth bar}.each do |type|
       quick_graph("labeled_#{type}", :type => type, :label => 'Glucose')
+    end
+  end
+
+  def test_each_graph_with_nil
+    %w{pie area discrete smooth bar}.each do |type|
+      nil_graph("nil_#{type}", :type => type, :label => 'Glucose')
     end
   end
 
@@ -284,6 +292,10 @@ class SparklinesTest < Test::Unit::TestCase
 
   def quick_graph(name, options)
     Sparklines.plot_to_file("#{@output_dir}/#{name}.png", @data, options)
+  end
+
+  def nil_graph(name, options)
+    Sparklines.plot_to_file("#{@output_dir}/#{name}.png", @nil_data, options)
   end
 
 end
