@@ -272,7 +272,7 @@ class Sparklines
 
     i = 1
     # raise @norm_data.to_yaml
-    max_normalized = @norm_data.max
+    max_normalized = normalize(@maximum_value)
     @norm_data.each_with_index do |r, index|
       color = ((@data[index] || @minimum_value) >= upper) ? above_color : below_color
       @draw.stroke('transparent')
@@ -283,8 +283,7 @@ class Sparklines
     end
 
     unless target.nil?
-      normalized_target_value = ((target.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
-      adjusted_target_value = (height - 3 - normalized_target_value/(101.0/(height-4))).to_i
+      adjusted_target_value = (height - 3 - normalize(target)/(101.0/(height-4))).to_i
       @draw.stroke(target_color)
       open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
     end
@@ -308,7 +307,7 @@ class Sparklines
   def discrete
 
     height = @options[:height].to_f
-    upper = @options[:upper].to_f
+    upper = normalize(@options[:upper].to_f)
     background_color = @options[:background_color]
     step = @options[:step].to_f
 
@@ -474,8 +473,7 @@ class Sparklines
     end
 
     unless target.nil?
-      normalized_target_value = ((target.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
-      adjusted_target_value = (height - 3 - normalized_target_value/(101.0/(height-4))).to_i
+      adjusted_target_value = (height - 3 - normalize(target)/(101.0/(height-4))).to_i
       @draw.stroke(target_color)
       open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
     end
@@ -649,7 +647,7 @@ class Sparklines
         if @maximum_value == @minimum_value
           value = @maximum_value
         else
-          value = ((value.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
+          value = normalize(value)
         end
       end
     end
@@ -790,6 +788,14 @@ class Sparklines
   #   returns: the standard deviation
   def standard_deviation(population)
     Math.sqrt(variance(population))
+  end
+
+  def normalize(x)
+    if x.nil?
+      nil
+    else
+      (x.to_f - @minimum_value) * 100 / (@maximum_value - @minimum_value)
+    end
   end
 
 end
