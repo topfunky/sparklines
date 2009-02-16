@@ -182,6 +182,14 @@ class SparklinesTest < Test::Unit::TestCase
         :type => 'discrete',
         :step => 8
       },
+      'discrete_max' => {
+        :type => 'discrete',
+        :max => @data.max * 4
+      },
+      'discrete_min' => {
+        :type => 'discrete',
+        :min => @data.max * -4
+      },
       'bar_wide' => {
         :type => 'bar',
         :step => 8
