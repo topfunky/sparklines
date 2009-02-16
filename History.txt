@@ -1,6 +1,6 @@
 == 0.5.4
 
-* ???
+* Support disabling last point when label is shown [Justin Love]
 
 == 0.5.2
 
