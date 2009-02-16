@@ -3,6 +3,7 @@
 * Support disabling last point when label is shown [Justin Love]
 * Handle missing data (nil) values in area, bar, discrete, smooth [Justin Love]
 * Extract method: normalize [Justin Love]
+* Support :min and :max options to set graph scale [Justin Love]
 
 == 0.5.2
 

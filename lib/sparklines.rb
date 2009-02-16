@@ -104,6 +104,8 @@ class Sparklines
         :last_color       => 'red',
         :std_dev_color    => '#efefef',
 
+        :min              => nil,
+        :max              => nil,
         :has_min          => false,
         :has_max          => false,
         :has_last         => nil,
@@ -630,12 +632,12 @@ class Sparklines
   def normalize_data
     case @options[:type].to_s
     when 'bar'
-      @minimum_value = 0.0
+      @minimum_value = @options[:min] || 0.0
     else
-      @minimum_value = @data.compact.min
+      @minimum_value = @options[:min] || @data.compact.min
     end
 
-    @maximum_value = @data.compact.max
+    @maximum_value = @options[:max] || @data.compact.max
 
     case @options[:type].to_s
     when 'pie'
