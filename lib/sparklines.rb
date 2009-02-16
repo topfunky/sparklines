@@ -106,7 +106,7 @@ class Sparklines
 
         :has_min          => false,
         :has_max          => false,
-        :has_last         => false,
+        :has_last         => nil,
         :has_std_dev      => false,
 
         :label            => nil
@@ -689,7 +689,9 @@ class Sparklines
 
     # Make room for label and last value
     unless @options[:label].nil?
-      @options[:has_last] = true
+      if (@options[:has_last].nil?)
+        @options[:has_last] = true
+      end
       @label_width = calculate_width(@options[:label])
       @data_last_width = calculate_width(@data.last)
       # HACK The 7.0 is a severe hack. Must figure out correct spacing
