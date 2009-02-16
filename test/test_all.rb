@@ -154,6 +154,12 @@ class SparklinesTest < Test::Unit::TestCase
         :type => 'smooth',
         :line_color => 'purple'
       },
+      'labeled_smooth_without_last' =>
+      {
+        :type => 'smooth',
+        :label => 'Glucose',
+        :has_last => false
+      },
       'pie_large'	 => {
         :type => 'pie',
         :diameter => 200
