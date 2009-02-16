@@ -1,6 +1,7 @@
 == 0.5.4
 
 * Support disabling last point when label is shown [Justin Love]
+* Handle missing data (nil) values in area, bar, discrete, smooth
 
 == 0.5.2
 

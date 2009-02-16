@@ -206,7 +206,7 @@ class Sparklines
     coords = [[0,(height - 3 - upper/(101.0/(height-4)))]]
     i=0
     @norm_data.each do |r|
-      coords.push [(2 + i), (height - 3 - r/(101.0/(height-4)))]
+      coords.push [(2 + i), (height - 3 - r/(101.0/(height-4)))] if r
       i += step
     end
     coords.push [(@norm_data.size - 1) * step + 4, (height - 3 - upper/(101.0/(height-4)))]
@@ -240,8 +240,8 @@ class Sparklines
     end
     @draw.clip_path('all')
 
-    drawbox(coords[@norm_data.index(@norm_data.min)+1], 1, min_color) if has_min == true
-    drawbox(coords[@norm_data.index(@norm_data.max)+1], 1, max_color) if has_max == true
+    drawbox(coords[@norm_data.index(@norm_data.compact.min)+1], 1, min_color) if has_min == true
+    drawbox(coords[@norm_data.index(@norm_data.compact.max)+1], 1, max_color) if has_max == true
 
     drawbox(coords[-2], 1, last_color) if has_last == true
 
@@ -274,7 +274,7 @@ class Sparklines
     # raise @norm_data.to_yaml
     max_normalized = @norm_data.max
     @norm_data.each_with_index do |r, index|
-      color = (@data[index] >= upper) ? above_color : below_color
+      color = ((@data[index] || @minimum_value) >= upper) ? above_color : below_color
       @draw.stroke('transparent')
       @draw.fill(color)
       bar_height_from_top = @canvas.rows - ( (r.to_f / max_normalized.to_f) * @canvas.rows)
@@ -324,10 +324,12 @@ class Sparklines
 
     i = 0
     @norm_data.each do |r|
-      color = (r >= upper) ? above_color : below_color
-      @draw.stroke(color)
-      @draw.line(i, (@canvas.rows - r/(101.0/(height-4))-4).to_f,
-      i, (@canvas.rows - r/(101.0/(height-4))).to_f)
+      if !r.nil?
+        color = (r >= upper) ? above_color : below_color
+        @draw.stroke(color)
+        @draw.line(i, (@canvas.rows - r/(101.0/(height-4))-4).to_f,
+        i, (@canvas.rows - r/(101.0/(height-4))).to_f)
+      end
       i += step
     end
 
@@ -459,7 +461,9 @@ class Sparklines
     coords = []
     i=0
     @norm_data.each do |r|
-      coords.push [ i, (height - 3 - r/(101.0/(height-4))) ]
+      if !r.nil?
+        coords.push [ i, (height - 3 - r/(101.0/(height-4))) ]
+      end
       i += step
     end
 
@@ -476,8 +480,8 @@ class Sparklines
       open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
     end
 
-    drawbox(coords[@norm_data.index(@norm_data.min)], 2, min_color) if has_min == true
-    drawbox(coords[@norm_data.index(@norm_data.max)], 2, max_color) if has_max == true
+    drawbox(coords[@norm_data.index(@norm_data.compact.min)], 2, min_color) if has_min == true
+    drawbox(coords[@norm_data.index(@norm_data.compact.max)], 2, max_color) if has_max == true
     drawbox(coords[-1], 2, last_color) if has_last == true
 
     @draw.draw(@canvas)
@@ -630,10 +634,10 @@ class Sparklines
     when 'bar'
       @minimum_value = 0.0
     else
-      @minimum_value = @data.min
+      @minimum_value = @data.compact.min
     end
 
-    @maximum_value = @data.max
+    @maximum_value = @data.compact.max
 
     case @options[:type].to_s
     when 'pie'
