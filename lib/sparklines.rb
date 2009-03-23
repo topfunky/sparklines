@@ -251,6 +251,7 @@ class Sparklines
     @canvas
   end
 
+
   ##
   # A bar graph.
   #
@@ -434,11 +435,20 @@ class Sparklines
   #   :target - A 1px horizontal line will be drawn at this value. Useful for showing an average.
   #
   #   :target_color - Color of the target line. Defaults to white.
+  #
+  #   :dot_values - Determines whether a dot will be drawn for all values between the first and last values. Defaults to false.
+  #
+  #   :dot_size - The radius of the dots to be drawn if +:dot_values+ is +true+.
 
   def smooth
+    if @options[:dot_values] != false
+      dot_size       = @options.has_key?(:dot_size) ? @options[:dot_size].to_f : 2
+    else
+      dot_size       = 0
+    end
     step             = @options[:step].to_f
-    height           = @options[:height].to_f
-    width            = ((@norm_data.size - 1) * step).to_f
+    height           = @options[:height].to_f + (dot_size)
+    width            = ((@norm_data.size - 1) * step + (dot_size * 2) + 2).to_f
 
     background_color = @options[:background_color]
     create_canvas(width, height, background_color)
@@ -456,37 +466,70 @@ class Sparklines
     target           = @options.has_key?(:target) ? @options[:target].to_f : nil
     target_color     = @options[:target_color] || 'white'
 
-    drawstddevbox(width,height,std_dev_color) if has_std_dev == true
 
+
+    drawstddevbox(width,height,std_dev_color) if has_std_dev == true
+    
+    # @draw.stroke_antialias(false)
+    # @draw.stroke_width = 2
     @draw.stroke(line_color)
     coords = []
     i=0
     @norm_data.each do |r|
-      if !r.nil?
-        coords.push [ i, (height - 3 - r/(101.0/(height-4))) ]
+      if i == 0
+        i += dot_size
       end
+      
+      coords.push [ i, (height - (dot_size / 2.0) - 3 - r/(101.0/(height-4-(dot_size)))) ]
       i += step
     end
 
     if @options[:underneath_color]
-      closed_polygon(height, width, coords)
+      closed_polygon(height, width, coords, dot_size)
+      @draw.stroke(line_color)
+      open_ended_polyline(coords)
     else
       open_ended_polyline(coords)
     end
 
     unless target.nil?
-      adjusted_target_value = (height - 3 - normalize(target)/(101.0/(height-4))).to_i
+      normalized_target_value = ((target.to_f - @minimum_value)/(@maximum_value - @minimum_value)) * 100.0
+      # adjusted_target_value = (height - 3 - normalized_target_value/(101.0/(height-4))).to_i
+      adjusted_target_value = (height - (dot_size / 2.0) - 3 - normalized_target_value/(101.0/(height-4-(dot_size)))).to_i
       @draw.stroke(target_color)
-      open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
+      
+      if @options[:dot_values] == false
+        open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
+      else
+        open_ended_polyline([[coords.first.first, adjusted_target_value], [coords.last.first, adjusted_target_value]])
+      end
     end
 
-    drawbox(coords[@norm_data.index(@norm_data.compact.min)], 2, min_color) if has_min == true
-    drawbox(coords[@norm_data.index(@norm_data.compact.max)], 2, max_color) if has_max == true
-    drawbox(coords[-1], 2, last_color) if has_last == true
+    if @options[:dot_values] != false
+      @draw.fill('black')
+      @draw.stroke('black')
+      # Rails.logger.debug { "coords.length = #{coords.length}" }
+      coords.each_with_index do |coord, i|
+        # Rails.logger.debug { "coord = #{coord.inspect}" } 
+        @draw.ellipse(coord[0], coord[1], dot_size, dot_size, 0, 360) unless @data[i] > @maximum_value
+      end
+      @draw.stroke(line_color)
+    end
 
+    if @options[:dot_values] == false
+      drawbox(coords[@norm_data.index(@norm_data.min)], 2, min_color) if has_min == true
+      drawbox(coords[@norm_data.index(@norm_data.max)], 2, max_color) if has_max == true
+      drawbox(coords[-1], 2, last_color) if has_last == true
+    else
+      draw_circle(coords[@norm_data.index(@norm_data.min)], dot_size, min_color) if has_min == true
+      draw_circle(coords[@norm_data.index(@norm_data.max)], dot_size, max_color) if has_max == true
+      draw_circle(coords[-1], dot_size, last_color) if has_last == true
+    end
+    
     @draw.draw(@canvas)
     @canvas
   end
+
 
   ##
   # Creates a whisker sparkline to track on/off type data. There are five states:
@@ -665,18 +708,21 @@ class Sparklines
   end
 
   # Fills in the area under the line (used for a smooth graph)
-  def closed_polygon(height, width, coords)
+  def closed_polygon(height, width, coords, dot_size = 0)
     return if @options[:underneath_color].nil?
+    
     list = []
-    # Start off screen so completed polygon doesn't show
-    list << [-1, height + 1]
-    list << [coords.first.first - 1, coords.first.last]
-    # Now the normal coords
+    
+    list << [coords.first.first - 1 + (dot_size / 2.0), height - 3 - (dot_size / 2.0)]
+    list << [coords.first.first - 1 + (dot_size / 2.0), coords.first.last]
+    
     list << coords
-    # Close offscreen
-    list << [coords.last.first + 1, coords.last.last]
-    list << [width + 1, height + 1]
-    @draw.fill( @options[:underneath_color] )
+    
+    list << [coords.last.first + 1 - (dot_size / 2.0), coords.last.last]
+    list << [coords.last.first + 1 - (dot_size / 2.0), height - 3 - (dot_size / 2.0)]
+    
+    @draw.stroke(@options[:underneath_color])
+    @draw.fill(@options[:underneath_color])
     @draw.polygon( *list.flatten )
   end
 
@@ -741,6 +787,18 @@ class Sparklines
     @draw.fill(color)
     @draw.rectangle(pt[0]-offset, pt[1]-offset, pt[0]+offset, pt[1]+offset)
   end
+
+  ##
+  # Utility to draw a coloured circle
+  # Centred on pt, radius of radius in each direction, fill color is color
+
+  def draw_circle(pt, radius, color)
+    # @draw.stroke('transparent')
+    @draw.stroke(color)
+    @draw.fill(color)
+    @draw.ellipse(pt[0], pt[1], radius, radius, 0, 360)
+  end 
+
 
   ##
   # Utility to draw the standard deviation box
