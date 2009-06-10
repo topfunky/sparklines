@@ -854,7 +854,8 @@ class Sparklines
     if x.nil?
       nil
     else
-      (x.to_f - @minimum_value) * 100 / (@maximum_value - @minimum_value)
+      @minimum_value == @maximum_value ? @maximum_value :
+        (x.to_f - @minimum_value) * 100 / (@maximum_value - @minimum_value)
     end
   end
 
