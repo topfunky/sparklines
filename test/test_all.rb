@@ -18,6 +18,7 @@ class SparklinesTest < Test::Unit::TestCase
     115 120 130 140 150 160 170 100 100 10).map {|i| i.to_f}
     @nil_data = @data.dup
     [5, 10, 11, 20, 25, 26, 27].each {|i| @nil_data[i] = nil}
+    @constant_data = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
   end
 
   test "basic bullet" do
@@ -111,6 +112,10 @@ class SparklinesTest < Test::Unit::TestCase
       nil_graph("nil_#{type}", :type => type, :label => 'Glucose')
     end
   end
+
+  def test_smooth_graph_with_target_and_constant_data
+    constant_graph("constant_smooth", :type => 'smooth', :label => 'a-label', :target => 1)
+  end    
 
   def test_whisker_decimals
     @data = (1..200).map {|n| n.to_f/100 }
@@ -304,6 +309,10 @@ class SparklinesTest < Test::Unit::TestCase
 
   def nil_graph(name, options)
     Sparklines.plot_to_file("#{@output_dir}/#{name}.png", @nil_data, options)
+  end
+
+  def constant_graph(name, options)
+    Sparklines.plot_to_file("#{@output_dir}/#{name}.png", @constant_data, options)
   end
 
 end
