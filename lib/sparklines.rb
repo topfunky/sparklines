@@ -16,18 +16,18 @@ Requires the RMagick image library.
 
 {Dan Nugent}[mailto:nugend@gmail.com] Original port from Python Sparklines library.
 
-{Geoffrey Grosenbach}[mailto:boss@topfunky.com] -- http://nubyonrails.topfunky.com 
+{Geoffrey Grosenbach}[mailto:boss@topfunky.com] -- http://nubyonrails.topfunky.com
 -- Conversion to module and further maintenance.
 
 ==General Usage and Defaults
 
 To use in a script:
 
-	require 'rubygems'
-	require 'sparklines'
-	Sparklines.plot([1,25,33,46,89,90,85,77,42], 
-	                :type => 'discrete', 
-	                :height => 20)
+        require 'rubygems'
+        require 'sparklines'
+        Sparklines.plot([1,25,33,46,89,90,85,77,42],
+                        :type => 'discrete',
+                        :height => 20)
 
 An image blob will be returned which you can print, write to STDOUT, etc.
 
@@ -41,11 +41,11 @@ In your view, call it like this:
 
 Or specify details:
 
-  <%= sparkline_tag [1,2,3,4,5,6], 
-                    :type => 'discrete', 
-                    :height => 10, 
-                    :upper => 80, 
-                    :above_color => 'green', 
+  <%= sparkline_tag [1,2,3,4,5,6],
+                    :type => 'discrete',
+                    :height => 10,
+                    :upper => 80,
+                    :above_color => 'green',
                     :below_color => 'blue' %>
 
 Graph types:
@@ -330,7 +330,7 @@ class Sparklines
         color = (r >= upper) ? above_color : below_color
         @draw.stroke(color)
         @draw.line(i, (@canvas.rows - r/(101.0/(height-4))-4).to_f,
-        i, (@canvas.rows - r/(101.0/(height-4))).to_f)
+                   i, (@canvas.rows - r/(101.0/(height-4))).to_f)
       end
       i += step
     end
@@ -441,7 +441,7 @@ class Sparklines
   #   :dot_size - The radius of the dots to be drawn if +:dot_values+ is +true+.
 
   def smooth
-    if @options[:dot_values] != false
+    if @options.has_key?(:dot_values) && @options[:dot_values] != false
       dot_size       = @options.has_key?(:dot_size) ? @options[:dot_size].to_f : 2
     else
       dot_size       = 0
@@ -469,7 +469,7 @@ class Sparklines
 
 
     drawstddevbox(width,height,std_dev_color) if has_std_dev == true
-    
+
     # @draw.stroke_antialias(false)
     # @draw.stroke_width = 2
     @draw.stroke(line_color)
@@ -479,7 +479,7 @@ class Sparklines
       if i == 0
         i += dot_size
       end
-      
+
       coords.push [ i, (height - (dot_size / 2.0) - 3 - r/(101.0/(height-4-(dot_size)))) ]
       i += step
     end
@@ -497,7 +497,7 @@ class Sparklines
       # adjusted_target_value = (height - 3 - normalized_target_value/(101.0/(height-4))).to_i
       adjusted_target_value = (height - (dot_size / 2.0) - 3 - normalized_target_value/(101.0/(height-4-(dot_size)))).to_i
       @draw.stroke(target_color)
-      
+
       if @options[:dot_values] == false
         open_ended_polyline([[-5, adjusted_target_value], [width + 5, adjusted_target_value]])
       else
@@ -510,7 +510,7 @@ class Sparklines
       @draw.stroke('black')
       # Rails.logger.debug { "coords.length = #{coords.length}" }
       coords.each_with_index do |coord, i|
-        # Rails.logger.debug { "coord = #{coord.inspect}" } 
+        # Rails.logger.debug { "coord = #{coord.inspect}" }
         @draw.ellipse(coord[0], coord[1], dot_size, dot_size, 0, 360) unless @data[i] > @maximum_value
       end
       @draw.stroke(line_color)
@@ -525,7 +525,7 @@ class Sparklines
       draw_circle(coords[@norm_data.index(@norm_data.max)], dot_size, max_color) if has_max == true
       draw_circle(coords[-1], dot_size, last_color) if has_last == true
     end
-    
+
     @draw.draw(@canvas)
     @canvas
   end
@@ -710,17 +710,17 @@ class Sparklines
   # Fills in the area under the line (used for a smooth graph)
   def closed_polygon(height, width, coords, dot_size = 0)
     return if @options[:underneath_color].nil?
-    
+
     list = []
-    
+
     list << [coords.first.first - 1 + (dot_size / 2.0), height - 3 - (dot_size / 2.0)]
     list << [coords.first.first - 1 + (dot_size / 2.0), coords.first.last]
-    
+
     list << coords
-    
+
     list << [coords.last.first + 1 - (dot_size / 2.0), coords.last.last]
     list << [coords.last.first + 1 - (dot_size / 2.0), height - 3 - (dot_size / 2.0)]
-    
+
     @draw.stroke(@options[:underneath_color])
     @draw.fill(@options[:underneath_color])
     @draw.polygon( *list.flatten )
@@ -743,9 +743,12 @@ class Sparklines
         @options[:has_last] = true
       end
       @label_width = calculate_width(@options[:label])
-      @data_last_width = calculate_width(@data.last)
-      # HACK The 7.0 is a severe hack. Must figure out correct spacing
-      @label_and_data_last_width = @label_width + @data_last_width + @@label_margin * 7.0
+      @data_last_width = calculate_width(@data.last.to_s)
+      
+      puts "Width #{w}"
+      
+      # TODO: Must figure out correct spacing
+      @label_and_data_last_width = @label_width + @data_last_width + @@label_margin * 3.0
       w += @label_and_data_last_width
     end
 
@@ -766,15 +769,15 @@ class Sparklines
       @draw.font = @font if @font
       @draw.gravity = Magick::WestGravity
       @draw.annotate( @canvas,
-      @label_width, 1.0,
-      w - @label_and_data_last_width + @@label_margin, h - calculate_caps_height/2.0,
-      @options[:label])
+                      @label_width, 1.0,
+                      w - @label_and_data_last_width + @@label_margin, h - calculate_caps_height/2.0,
+                      @options[:label])
 
       @draw.fill = 'red'
       @draw.annotate( @canvas,
-      @data_last_width, 1.0,
-      w - @data_last_width - @@label_margin * 2.0, h - calculate_caps_height/2.0,
-      @data.last.to_s)
+                      @data_last_width, 1.0,
+                      w - @data_last_width - @@label_margin, h - calculate_caps_height/2.0,
+                      @data.last.to_s)
     end
   end
 
@@ -797,7 +800,7 @@ class Sparklines
     @draw.stroke(color)
     @draw.fill(color)
     @draw.ellipse(pt[0], pt[1], radius, radius, 0, 360)
-  end 
+  end
 
 
   ##

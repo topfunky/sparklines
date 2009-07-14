@@ -320,15 +320,15 @@ end
 # HACK Make reference HTML file for viewing output
 END {
   def image_tag(image_path)
-    %(<img src="#{image_path}" />)
+    %(<img src="../#{image_path}" />)
   end
 
   reference_files = Dir['test/expected/*']
   output = TidyTable.new(reference_files).to_html(%w(Expected Actual)) do |record|
-    [image_tag("../../" + record), image_tag("../../" + record.gsub('expected', 'actual'))]
+    [image_tag(record), image_tag(record.gsub('expected', 'actual'))]
   end
   FileUtils.mkdir_p("test/actual")
-  File.open("test/actual/index.html", "w") do |f|
+  File.open("test/output.html", "w") do |f|
     f.write <<-EOL
     <style>
     .first_column {
