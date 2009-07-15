@@ -23,76 +23,76 @@ class SparklinesTest < Test::Unit::TestCase
 
   test "basic bullet" do
     Sparklines.plot_to_file("#{@output_dir}/bullet_basic.png", 85, {
-      :type => "bullet",
-      :target => 80,
-      :good => 100,
-      :height => 15
-    })
+                              :type => "bullet",
+                              :target => 80,
+                              :good => 100,
+                              :height => 15
+                            })
   end
 
   test "full-featured bullet" do
     Sparklines.plot_to_file("#{@output_dir}/bullet_full_featured.png", 85, {
-      :type => "bullet",
-      :target => 90,
-      :bad => 60,
-      :satisfactory => 80,
-      :good => 100,
-      :height => 15
-    })
+                              :type => "bullet",
+                              :target => 90,
+                              :bad => 60,
+                              :satisfactory => 80,
+                              :good => 100,
+                              :height => 15
+                            })
   end
 
   test "colorful bullet" do
     Sparklines.plot_to_file("#{@output_dir}/bullet_colorful.png", 85, {
-      :type => "bullet",
-      :target => 90,
-      :bad => 60,
-      :satisfactory => 80,
-      :good => 100,
-      :height => 15,
-      :bad_color => '#c3e3bf',
-      :satisfactory_color => '#96cf90',
-      :good_color => "#6ab162"
-    })
+                              :type => "bullet",
+                              :target => 90,
+                              :bad => 60,
+                              :satisfactory => 80,
+                              :good => 100,
+                              :height => 15,
+                              :bad_color => '#c3e3bf',
+                              :satisfactory_color => '#96cf90',
+                              :good_color => "#6ab162"
+                            })
   end
 
   test "tall bullet" do
     Sparklines.plot_to_file("#{@output_dir}/bullet_tall.png", 85, {
-      :type => "bullet",
-      :target => 90,
-      :bad => 60,
-      :satisfactory => 80,
-      :good => 100,
-      :height => 30
-    })
+                              :type => "bullet",
+                              :target => 90,
+                              :bad => 60,
+                              :satisfactory => 80,
+                              :good => 100,
+                              :height => 30
+                            })
   end
 
   test "wide bullet" do
     Sparklines.plot_to_file("#{@output_dir}/bullet_wide.png", 85, {
-      :type => "bullet",
-      :target => 90,
-      :bad => 60,
-      :satisfactory => 80,
-      :good => 100,
-      :height => 15,
-      :width => 200
-    })
+                              :type => "bullet",
+                              :target => 90,
+                              :bad => 60,
+                              :satisfactory => 80,
+                              :good => 100,
+                              :height => 15,
+                              :width => 200
+                            })
   end
 
   test "smooth with target" do
     quick_graph("smooth_with_target", {
-      :type => "smooth",
-      :target => 50,
-      :target_color => '#999999',
-      :line_color => "#6699cc",
-      :underneath_color => "#ebf3f6"
-    })
+                  :type => "smooth",
+                  :target => 50,
+                  :target_color => '#999999',
+                  :line_color => "#6699cc",
+                  :underneath_color => "#ebf3f6"
+                })
   end
 
   test "whisker with step" do
     quick_graph("whisker_with_step", {
-      :type => "whisker",
-      :step => 5
-    })
+                  :type => "whisker",
+                  :step => 5
+                })
   end
 
   def test_each_graph
@@ -106,7 +106,11 @@ class SparklinesTest < Test::Unit::TestCase
       quick_graph("labeled_#{type}", :type => type, :label => 'Glucose')
     end
   end
-
+  
+  test "bar graph with sprintf for label" do
+    quick_graph("labeled_bar_sprintf", :type => "bar", :label => "Formatted", :label_format => "%i")    
+  end
+  
   def test_each_graph_with_nil
     %w{pie area discrete smooth bar}.each do |type|
       nil_graph("nil_#{type}", :type => type, :label => 'Glucose')
@@ -120,10 +124,10 @@ class SparklinesTest < Test::Unit::TestCase
   def test_whisker_decimals
     @data = (1..200).map {|n| n.to_f/100 }
     quick_graph("labeled_whisker_decimals", {
-      :height => 30,
-      :type => 'smooth',
-      :label => 'png'
-    })
+                  :height => 30,
+                  :type => 'smooth',
+                  :label => 'png'
+                })
   end
 
   def test_whisker_random
@@ -149,16 +153,16 @@ class SparklinesTest < Test::Unit::TestCase
     # Test extremes which previously did not work right
     [0, 1, 45, 95, 99, 100].each do |value|
       Sparklines.plot_to_file("#{@output_dir}/pie#{value}.png",
-      value, {
-        :type => 'pie',
-        :diameter => 128
-      })
+                              value, {
+                                :type => 'pie',
+                                :diameter => 128
+                              })
     end
     Sparklines.plot_to_file("#{@output_dir}/pie_flat.png",
-    [60],
-    {
-      :type => 'pie'
-    })
+                            [60],
+                            {
+                              :type => 'pie'
+                            })
   end
 
   def test_special_conditions
@@ -215,49 +219,49 @@ class SparklinesTest < Test::Unit::TestCase
 
   def test_bar_extreme_values
     Sparklines.plot_to_file("#{@output_dir}/bar_extreme_values.png",
-    [0,1,100,2,99,3,98,4,97,5,96,6,95,7,94,8,93,9,92,10,91], {
-      :type => 'bar',
-      :below_color => 'blue',
-      :above_color => 'red',
-      :upper => 90,
-      :step => 4
-    })
+                            [0,1,100,2,99,3,98,4,97,5,96,6,95,7,94,8,93,9,92,10,91], {
+                              :type => 'bar',
+                              :below_color => 'blue',
+                              :above_color => 'red',
+                              :upper => 90,
+                              :step => 4
+                            })
   end
 
   def test_string_args
     quick_graph("bar_string.png", {
-      'type' => 'bar',
-      'below_color' => 'blue',
-      'above_color' => 'red',
-      'upper' => 50,
-      'height' => 50,
-      'step' => 8
-    })
+                  'type' => 'bar',
+                  'below_color' => 'blue',
+                  'above_color' => 'red',
+                  'upper' => 50,
+                  'height' => 50,
+                  'step' => 8
+                })
   end
 
   def test_area_min_max
     quick_graph("area_min_max", {
-      :has_min => true,
-      :has_max => true,
-      :has_first => true,
-      :has_last => true
-    })
+                  :has_min => true,
+                  :has_max => true,
+                  :has_first => true,
+                  :has_last => true
+                })
   end
 
   def test_smooth_underneath_color
     quick_graph("smooth_underneath_color", {
-      :type => 'smooth',
-      :line_color => "#6699cc",
-      :underneath_color => "#ebf3f6"
-    })
+                  :type => 'smooth',
+                  :line_color => "#6699cc",
+                  :underneath_color => "#ebf3f6"
+                })
   end
 
   def test_close_values
     Sparklines.plot_to_file("#{@output_dir}/smooth_similar_nonzero_values.png", [100, 90, 95, 99, 80, 90], {
-      :type => 'smooth',
-      :line_color => "#6699cc",
-      :underneath_color => "#ebf3f6"
-    })
+                              :type => 'smooth',
+                              :line_color => "#6699cc",
+                              :underneath_color => "#ebf3f6"
+                            })
   end
 
   def test_no_type
@@ -266,39 +270,39 @@ class SparklinesTest < Test::Unit::TestCase
 
   def test_standard_deviation
     quick_graph('standard_deviation', {
-      :type => 'smooth',
-      :height => 100,
-      :line_color => '#666',
-      :has_std_dev => true,
-      :std_dev_color => '#cccccc'
-    })
+                  :type => 'smooth',
+                  :height => 100,
+                  :line_color => '#666',
+                  :has_std_dev => true,
+                  :std_dev_color => '#cccccc'
+                })
   end
 
   def test_standard_deviation_tall
     quick_graph('standard_deviation_tall', {
-      :type => 'smooth',
-      :height => 300,
-      :line_color => '#666',
-      :has_std_dev => true,
-      :std_dev_color => '#cccccc'
-    })
+                  :type => 'smooth',
+                  :height => 300,
+                  :line_color => '#666',
+                  :has_std_dev => true,
+                  :std_dev_color => '#cccccc'
+                })
   end
 
   def test_standard_deviation_short
     quick_graph('standard_deviation_short', {
-      :type => 'smooth',
-      :height => 20,
-      :line_color => '#666',
-      :has_std_dev => true,
-      :std_dev_color => '#cccccc'
-    })
+                  :type => 'smooth',
+                  :height => 20,
+                  :line_color => '#666',
+                  :has_std_dev => true,
+                  :std_dev_color => '#cccccc'
+                })
   end
 
   def test_zeros
     @data = [0,0,0,0]
     quick_graph('zeros', {
-      :type => 'smooth',
-    })
+                  :type => 'smooth',
+                })
   end
 
   private
@@ -344,4 +348,6 @@ END {
     EOL
     f.write output
   end
+
+  # TODO: Squawk if there are files in actual that aren't in expected
 }

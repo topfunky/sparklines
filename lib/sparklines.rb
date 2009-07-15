@@ -67,6 +67,8 @@ General Defaults:
  :below_color       => 'grey'
  :background_color  => 'white'
  :line_color        => 'lightgrey'
+ :label             => name_of_label_after_graph
+ :label_format      => sprintf_string_to_format_label
 
 ==License
 
@@ -743,10 +745,8 @@ class Sparklines
         @options[:has_last] = true
       end
       @label_width = calculate_width(@options[:label])
-      @data_last_width = calculate_width(@data.last.to_s)
-      
-      puts "Width #{w}"
-      
+      @data_last_width = calculate_width(formatted_last_data_string)
+
       # TODO: Must figure out correct spacing
       @label_and_data_last_width = @label_width + @data_last_width + @@label_margin * 3.0
       w += @label_and_data_last_width
@@ -777,8 +777,15 @@ class Sparklines
       @draw.annotate( @canvas,
                       @data_last_width, 1.0,
                       w - @data_last_width - @@label_margin, h - calculate_caps_height/2.0,
-                      @data.last.to_s)
+                      formatted_last_data_string)
     end
+  end
+
+  def formatted_last_data_string
+    if @options[:label_format]
+      return sprintf(@options[:label_format], @data.last)
+    end
+    @data.last.to_s
   end
 
   ##
