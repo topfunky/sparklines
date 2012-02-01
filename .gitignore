@@ -1,4 +1,4 @@
 .DS_Store
-test/actual/*
 doc/*
+test/actual/*
 /test/output.html

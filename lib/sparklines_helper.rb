@@ -8,7 +8,7 @@ module SparklinesHelper
   #  sparkline_tag [42, 37, 43, 182], :type => 'bar', :line_color => 'black'
   #
 	# You can also pass :class => 'some_css_class' ('sparkline' by default).
-	def sparkline_tag(results=[], options={})		
+	def sparkline_tag(results=[], options={})
     url = { :controller => 'sparklines' }
     url[:results] = results.join(',') unless results.nil?
 		options = url.merge(options)

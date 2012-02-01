@@ -19,7 +19,9 @@ Requires the RMagick image library.
 {Geoffrey Grosenbach}[mailto:boss@topfunky.com] -- http://nubyonrails.topfunky.com
 -- Conversion to module and further maintenance.
 
-==General Usage and Defaults
+{Alex Shearn}[https://github.com/shearn89] -- Documentation update, 1st Feb 2012.
+
+==General Usage
 
 To use in a script:
 
@@ -31,23 +33,33 @@ To use in a script:
 
 An image blob will be returned which you can print, write to STDOUT, etc.
 
-For use with Ruby on Rails, see the sparklines plugin:
+The generator doesn't currently work, so in order to use this with Rails 3, put the following into your Gemfile and run `bundle install`:
 
-  http://nubyonrails.com/pages/sparklines
+    gem 'rmagick', :require => false
+    gem 'sparklines'
 
-In your view, call it like this:
+Then add a method to your controller such as:
 
-  <%= sparkline_tag [1,2,3,4,5,6] %>
+    def spark_data
+      values = [1,2,3,4,5,6,6,7,3,3,4,2]
+      spark = Sparklines.plot(values, 
+        :type => 'smooth', 
+        :height => '60', 
+        :background_color => '#ffffff',
+        :line_color => '#404040')
+      send_data spark, :type => 'image/png'
+    end
 
-Or specify details:
+Then in your view add a line like:
 
-  <%= sparkline_tag [1,2,3,4,5,6],
-                    :type => 'discrete',
-                    :height => 10,
-                    :upper => 80,
-                    :above_color => 'green',
-                    :below_color => 'blue' %>
+    <%= image_tag(url_for(:controller => "controllername", :action => "spark_data")) %>
+    
+Note that if your controller method gets data from the database, you may want to cache the method using a line like the following at the top of your Controller.
 
+    caches_action :spark_data, :expires_in => 15.minutes
+
+==Types and Defaults
+    
 Graph types:
 
  area
@@ -69,6 +81,8 @@ General Defaults:
  :line_color        => 'lightgrey'
  :label             => name_of_label_after_graph
  :label_format      => sprintf_string_to_format_label
+ 
+If the option you're looking for isn't listed here, check the method associated with the graph type (e.g. 'smooth'), or the full defaults hash listed in the 'plot_to_image' constructor.
 
 ==License
 
@@ -415,6 +429,10 @@ class Sparklines
   #   :step - An integer that determines the distance between each point on the sparkline.  Defaults to 2.
   #
   #   :height - An integer that determines what the height of the sparkline will be.  Defaults to 14
+  #   
+  #   :line_color - The color the sparkline will be, eg '#ff0000' or 'red'. Defaults to 'lightgrey'.
+  #
+  #   :background_color - The color the background will be, eg '#ffffff' or 'white'. Defaults to 'white'.
   #
   #   :has_min - Determines whether a dot will be drawn at the lowest value or not.  Defaults to false.
   #
