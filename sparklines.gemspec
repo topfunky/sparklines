@@ -17,6 +17,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.2.0}
   s.summary = %q{Tiny graphs.}
   s.test_files = ["test/test_all.rb"]
+  
+  s.add_dependency(%q<rmagick>, ["~> 2.13"])
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
