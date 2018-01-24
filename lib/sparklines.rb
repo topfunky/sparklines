@@ -1,6 +1,6 @@
 
 require 'rubygems'
-require 'RMagick'
+require 'rmagick'
 
 =begin rdoc
 
